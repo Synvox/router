@@ -1,5 +1,7 @@
 # `@synvox/router`
 
+![Travis](https://img.shields.io/travis/Synvox/router.svg)
+
 A tiny routing library to complement [micro](https://github.com/zeit/micro) inspired by the good and bad parts of `express.js`.
 
 ## Example
