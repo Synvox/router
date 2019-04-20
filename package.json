@@ -1,0 +1,31 @@
+{
+  "name": "@synvox/router",
+  "public": true,
+  "version": "0.1.0",
+  "description": "An express like routing lib for express that supports nesting routers.",
+  "main": "index.js",
+  "repository": "synvox/router",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "zeit",
+    "micro",
+    "routing",
+    "nesting"
+  ],
+  "author": "@synvox",
+  "license": "MIT",
+  "peerDependencies": {
+    "micro": "^9.3.3"
+  },
+  "dependencies": {
+    "path-match": "^1.2.4",
+    "qs": "^6.7.0"
+  },
+  "devDependencies": {
+    "micro": "^9.3.3",
+    "axios": "^0.18.0",
+    "test-listen": "^1.1.0"
+  }
+}
