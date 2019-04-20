@@ -53,19 +53,14 @@ This is useful for adding things like `cors` headers or rate limiting, but painf
 
 ```js
 import micro from "micro";
-import Router, { params, body } from "@synvox/router";
+import Router, { params, query } from "@synvox/router";
 
 const app = Router();
 
 app.get("/:name", req => {
   const { name } = params(req);
-  // do something with `name`
-  return { ok: true };
-});
-
-app.post("/", req => {
-  const body = body(req);
-  // do something with `body`
+  const { sort } = query(req);
+  // do something with `name` and `sort`
   return { ok: true };
 });
 
