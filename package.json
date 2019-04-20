@@ -24,8 +24,9 @@
     "qs": "^6.7.0"
   },
   "devDependencies": {
-    "micro": "^9.3.3",
     "axios": "^0.18.0",
+    "jest": "^24.7.1",
+    "micro": "^9.3.3",
     "test-listen": "^1.1.0"
   }
 }
