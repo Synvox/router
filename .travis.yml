@@ -1,7 +1,8 @@
 language: node_js
 node_js: node
 install:
-  - npm install -g jest codecov
+  - npm i
 script:
-  - jest
-  - codecov
+  - npx jest
+  - npx codecov
+cache: npm
