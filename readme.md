@@ -8,7 +8,7 @@ A tiny routing library to complement [micro](https://github.com/zeit/micro) insp
 
 ```js
 import micro from "micro";
-import { Router } from "@synvox/router";
+import Router from "@synvox/router";
 
 const app = Router();
 
@@ -21,7 +21,7 @@ micro(app).listen(3000);
 
 ```js
 import micro from "micro";
-import { Router } from "@synvox/router";
+import Router from "@synvox/router";
 
 import AuthService from "./auth";
 import PeopleService from "./people";
@@ -39,7 +39,7 @@ micro(app).listen(3000);
 ```js
 import micro from "micro";
 import cors from "cors";
-import { Router } from "@synvox/router";
+import Router from "@synvox/router";
 
 const app = Router();
 
@@ -52,7 +52,7 @@ This is useful for adding things like `cors` headers or rate limiting, but painf
 
 ```js
 import micro from "micro";
-import { Router, params, body } from "@synvox/router";
+import Router, { params, body } from "@synvox/router";
 
 const app = Router();
 
@@ -75,7 +75,7 @@ You may also write your own hooks using `WeakMap`:
 
 ```js
 import micro from "micro";
-import { Router, params, body } from "@synvox/router";
+import Router, { params, body } from "@synvox/router";
 
 const userWeakMap = new WeakMap();
 async function useUser(req) {
