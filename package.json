@@ -28,5 +28,9 @@
     "jest": "^24.7.1",
     "micro": "^9.3.3",
     "test-listen": "^1.1.0"
+  },
+  "jest": {
+    "coverageDirectory": "./coverage/",
+    "collectCoverage": true
   }
 }
