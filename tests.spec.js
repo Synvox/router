@@ -7,8 +7,7 @@ const micro = require("micro");
 const testListen = require("test-listen");
 const { get, post } = require("axios");
 
-const Router = require("./");
-const { params, query } = require("./");
+const { Router, params, query } = require("./");
 
 let server = null;
 beforeAll(() => {

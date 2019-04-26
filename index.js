@@ -13,6 +13,7 @@ const mergeRoutersSym = Symbol("MergeRouters");
 module.exports = Router;
 exports = Router;
 exports.default = Router;
+exports.Router = Router;
 
 function Router() {
   const routes = [];
@@ -102,7 +103,7 @@ exports.params = function params(req) {
 const queryMap = new WeakMap();
 exports.query = function query(req) {
   if (queryMap.get(req)) return queryMap.get(req);
-  const queryString = url.parse(req.url, true).search;
+  const queryString = url.parse(req.url, true).search || "";
   const query = qs.parse(queryString.slice(1));
   queryMap.set(req, query);
   return query;

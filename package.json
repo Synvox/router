@@ -1,9 +1,10 @@
 {
   "name": "@synvox/router",
   "public": true,
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "An express like routing lib for express that supports nesting routers.",
   "main": "index.js",
+  "types": "index.d.ts",
   "repository": "synvox/router",
   "scripts": {
     "test": "jest"
