@@ -27,5 +27,8 @@ interface App {
 export function Router(): App;
 export function params<T>(req: IncomingMessage): T;
 export function query<T>(req: IncomingMessage): T;
+export function createHook<T>(
+  fn: (req: IncomingMessage) => T
+): (req: IncomingMessage) => T;
 
 export default Router;

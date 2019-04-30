@@ -7,7 +7,7 @@ const micro = require("micro");
 const testListen = require("test-listen");
 const { get, post } = require("axios");
 
-const { Router, params, query } = require("./");
+const { Router, params, query, createHook } = require("./");
 
 let server = null;
 beforeAll(() => {
@@ -154,5 +154,36 @@ describe("search query", () => {
     const { data: body } = await get(`${url}?name="bob`);
 
     expect(body).toEqual("equal");
+  });
+});
+
+describe("custom hooks", () => {
+  const useUrl = createHook(req => req.url);
+  const useUrlAsync = createHook(async req => await req.url);
+
+  it("should allow sync hooks", async () => {
+    const app = Router();
+
+    app.get("/", req => {
+      return useUrl(req);
+    });
+
+    const url = await listen(micro(app));
+    const { data: body } = await get(url);
+
+    expect(typeof body === "string").toEqual(true);
+  });
+
+  it("should allow async hooks", async () => {
+    const app = Router();
+
+    app.get("/", async req => {
+      return await useUrlAsync(req);
+    });
+
+    const url = await listen(micro(app));
+    const { data: body } = await get(url);
+
+    expect(typeof body === "string").toEqual(true);
   });
 });

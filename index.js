@@ -8,12 +8,12 @@ const routeMatch = require("path-match")({
   end: false
 });
 
-const mergeRoutersSym = Symbol("MergeRouters");
-
 module.exports = Router;
 exports = Router;
 exports.default = Router;
 exports.Router = Router;
+
+const mergeRoutersSym = Symbol("MergeRouters");
 
 function Router() {
   const routes = [];
@@ -50,8 +50,6 @@ function Router() {
         paramsMap.set(req, params);
       }
 
-      route = route;
-
       const { handler } = route;
 
       let handled = true;
@@ -87,24 +85,40 @@ function Router() {
     return routes;
   }
 
-  Object.assign(handler, {
-    use,
-    [mergeRoutersSym]: mergeRouters
-  });
+  handler.use = use;
+  handler[mergeRoutersSym] = mergeRouters;
 
   return handler;
 }
+
+function createHook(fn) {
+  const weakMap = new WeakMap();
+  return function(req) {
+    const cache = weakMap.get(req);
+    if (cache) return cache;
+
+    const value = fn(req);
+    if (value instanceof Promise) {
+      return value.then(realValue => {
+        weakMap.set(req, realValue);
+        return realValue;
+      });
+    } else {
+      weakMap.set(req, value);
+      return value;
+    }
+  };
+}
+
+exports.createHook = createHook;
 
 const paramsMap = new WeakMap();
 exports.params = function params(req) {
   return paramsMap.get(req);
 };
 
-const queryMap = new WeakMap();
-exports.query = function query(req) {
-  if (queryMap.get(req)) return queryMap.get(req);
+exports.query = createHook(function query(req) {
   const queryString = url.parse(req.url, true).search || "";
   const query = qs.parse(queryString.slice(1));
-  queryMap.set(req, query);
   return query;
-};
+});

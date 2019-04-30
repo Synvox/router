@@ -67,22 +67,18 @@ app.get("/:name", req => {
 micro(app).listen(3000);
 ```
 
-You may also write your own hooks using `WeakMap`:
+You may also write your own hooks using `createHook`:
 
 ```js
 import micro from "micro";
-import Router, { params, body } from "@synvox/router";
+import Router, { params, body, createHook } from "@synvox/router";
 
-const userWeakMap = new WeakMap();
-async function useUser(req) {
-  if (userWeakMap.get(req)) return userWeakMap.get(req);
-
+const useUser = createHook(async req => {
   const token = req.headers.token;
   const user = token ? await Users.get(token) : null;
-  userWeakMap.set(req, user);
 
   return user;
-}
+});
 
 const app = Router();
 
