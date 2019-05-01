@@ -65,6 +65,23 @@ it("should handle multiple routes", async () => {
   expect(body).toEqual("post");
 });
 
+it("should hit the first qualified route", async () => {
+  const app = Router();
+
+  app.get("/", req => {
+    return `first`;
+  });
+
+  app.get("/abc", req => {
+    return `last`;
+  });
+
+  const url = await listen(micro(app));
+  const { data: body } = await get(`${url}/abc`);
+
+  expect(body).toEqual("last");
+});
+
 it("should allow nesting routers", async () => {
   const subApp = Router();
 

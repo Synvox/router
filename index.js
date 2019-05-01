@@ -2,10 +2,17 @@
 const url = require("url");
 const qs = require("qs");
 const { send } = require("micro");
-const routeMatch = require("path-match")({
+const pathMatch = require("path-match");
+const subAppMatch = pathMatch({
   sensitive: false,
   strict: false,
   end: false
+});
+
+const routeMatch = pathMatch({
+  sensitive: false,
+  strict: false,
+  end: true
 });
 
 module.exports = Router;
@@ -13,22 +20,21 @@ exports = Router;
 exports.default = Router;
 exports.Router = Router;
 
-const mergeRoutersSym = Symbol("MergeRouters");
+const setBasePathSymbol = Symbol("BasePathSetter");
 
 function Router() {
+  let basePath = "";
   const routes = [];
 
   function handle(method, path, handler) {
-    const match = routeMatch(path);
+    const match = routeMatch(basePath + path);
     routes.push({ method, path, handler, match });
   }
 
   function use(path, handler) {
-    const newRoutes = handler[mergeRoutersSym]();
-
-    for (let route of newRoutes) {
-      handle(route.method, path + route.path, route.handler);
-    }
+    handler[setBasePathSymbol](path);
+    const match = subAppMatch(basePath + path);
+    routes.push({ method: null, path, handler, match });
   }
 
   async function handler(req, res) {
@@ -37,6 +43,7 @@ function Router() {
 
       const path = url.parse(req.url, true).pathname;
       const params = route.match(path);
+
       if (!params) continue;
       paramsMap.set(req, params);
       return route.handler(req, res);
@@ -62,12 +69,16 @@ function Router() {
       handle(method, path, handler);
   });
 
-  function mergeRouters() {
-    return routes;
+  function setBasePath(bp) {
+    basePath = bp;
+    for (let route of routes) {
+      const match = routeMatch(basePath + route.path);
+      route.match = match;
+    }
   }
 
   handler.use = use;
-  handler[mergeRoutersSym] = mergeRouters;
+  handler[setBasePathSymbol] = setBasePath;
 
   return handler;
 }
@@ -99,7 +110,7 @@ exports.params = function params(req) {
 };
 
 exports.query = createHook(function query(req) {
-  const queryString = url.parse(req.url, true).search || "";
+  const queryString = url.parse(req.url, true).search;
   const query = qs.parse(queryString.slice(1));
   return query;
 });
