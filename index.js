@@ -58,7 +58,7 @@ function Router() {
         handled = false;
       });
 
-      if (handled && result !== undefined) return result;
+      if (handled) return result;
     }
 
     return send(res, 404);
