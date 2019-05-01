@@ -5,7 +5,7 @@ const { send } = require("micro");
 const routeMatch = require("path-match")({
   sensitive: false,
   strict: false,
-  end: false
+  end: true
 });
 
 module.exports = Router;
