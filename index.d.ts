@@ -2,17 +2,13 @@
 
 import { IncomingMessage, ServerResponse } from "http";
 
-type RequestHandler = (
-  req: IncomingMessage,
-  res: ServerResponse,
-  next: (error?: Error) => void
-) => any;
+type RequestHandler = (req: IncomingMessage, res: ServerResponse) => any;
 
 type RoutePathHandler = (path: string, handler: RequestHandler) => void;
 
 interface App {
   (req: IncomingMessage, res: ServerResponse): any;
-  use: ((router: App) => void) | RoutePathHandler;
+  use: RoutePathHandler;
   get: RoutePathHandler;
   head: RoutePathHandler;
   post: RoutePathHandler;

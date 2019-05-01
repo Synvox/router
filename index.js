@@ -5,7 +5,7 @@ const { send } = require("micro");
 const routeMatch = require("path-match")({
   sensitive: false,
   strict: false,
-  end: true
+  end: false
 });
 
 module.exports = Router;
@@ -19,24 +19,15 @@ function Router() {
   const routes = [];
 
   function handle(method, path, handler) {
-    const match = path ? routeMatch(path) : null;
+    const match = routeMatch(path);
     routes.push({ method, path, handler, match });
   }
 
   function use(path, handler) {
-    if (handler === undefined && typeof path === "function") {
-      handler = path;
-      path = null;
-    }
+    const newRoutes = handler[mergeRoutersSym]();
 
-    if (handler[mergeRoutersSym]) {
-      const newRoutes = handler[mergeRoutersSym]();
-
-      for (let route of newRoutes) {
-        handle(route.method, path + route.path, route.handler);
-      }
-    } else {
-      handle(null, path, handler);
+    for (let route of newRoutes) {
+      handle(route.method, path + route.path, route.handler);
     }
   }
 
@@ -44,21 +35,11 @@ function Router() {
     for (let route of routes) {
       if (route.method && route.method !== req.method) continue;
 
-      if (route.match) {
-        const params = route.match(req.url);
-        if (!params) continue;
-        paramsMap.set(req, params);
-      }
-
-      const { handler } = route;
-
-      let handled = true;
-      const result = await handler(req, res, e => {
-        if (e) throw e;
-        handled = false;
-      });
-
-      if (handled) return result;
+      const path = url.parse(req.url, true).pathname;
+      const params = route.match(path);
+      if (!params) continue;
+      paramsMap.set(req, params);
+      return route.handler(req, res);
     }
 
     return send(res, 404);

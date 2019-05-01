@@ -83,40 +83,6 @@ it("should allow nesting routers", async () => {
   expect(body).toEqual("age is 123");
 });
 
-describe("middleware", () => {
-  it("should allow request style middleware", async () => {
-    const app = Router();
-
-    app.use((req, _, next) => {
-      req.thing = 123;
-      next();
-    });
-
-    app.get("/", req => {
-      const { thing } = req;
-      return `thing is ${thing}`;
-    });
-
-    const url = await listen(micro(app));
-    const { data: body } = await get(`${url}/sub/123`);
-
-    expect(body).toEqual("thing is 123");
-  });
-
-  it("should throw on next(error)", async () => {
-    const app = Router();
-
-    app.use((_req, _res, next) => {
-      next(new Error("error"));
-    });
-
-    const url = await listen(micro(app));
-    const { status } = await get(url).catch(r => r.response);
-
-    expect(status).toEqual(500);
-  });
-});
-
 it("should 404 if no route is found", async () => {
   const app = Router();
 

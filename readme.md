@@ -35,21 +35,7 @@ app.use("/people", PeopleService);
 micro(app).listen(3000);
 ```
 
-`express.js` has a sharp knife called middleware. `@synvox/router` has a `use` method which will feel familiar:
-
-```js
-import micro from "micro";
-import cors from "cors";
-import Router from "@synvox/router";
-
-const app = Router();
-
-app.use(cors());
-
-micro(app).listen(3000);
-```
-
-This is useful for adding things like `cors` headers or rate limiting, but painful when mutating custom properties of `req`. _In `synvox/router`, the req object is a vanilla `http.IncomingMessage` object._ There is no `req.body`, `req.params`, `req.query`, etc. Instead try this:
+There is no `next` method and middleware is discouraged. _In `synvox/router`, the req object is a vanilla `http.IncomingMessage` object._ There is no `req.body`, `req.params`, `req.query`, etc. Instead try this:
 
 ```js
 import micro from "micro";
