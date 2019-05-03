@@ -109,15 +109,11 @@ it("should allow nesting routers", async () => {
 it("should allow nesting deep routers", async () => {
   const subApp2 = Router();
 
-  subApp2.get("/", () => {
-    return "2nd";
+  subApp2.get("/3rd", () => {
+    return "3rd";
   });
 
   const subApp1 = Router();
-
-  subApp1.get("/b", () => {
-    return "bad";
-  });
 
   const app = Router();
 
@@ -126,9 +122,9 @@ it("should allow nesting deep routers", async () => {
   app.use("/1st", subApp1);
 
   const url = await listen(micro(app));
-  const { data: body } = await get(`${url}/1st/2nd`);
+  const { data: body } = await get(`${url}/1st/2nd/3rd`);
 
-  expect(body).toEqual("2nd");
+  expect(body).toEqual("3rd");
 });
 
 it("should 404 if no route is found", async () => {

@@ -74,13 +74,17 @@ function Router() {
   function setBasePath(bp) {
     basePath = bp;
     for (let route of routes) {
-      const newPath = `${basePath}${route.path}`;
-      const match = routeMatch(newPath);
-      route.path = newPath;
-      route.match = match;
-
-      if (route.handler[setBasePathSymbol])
-        route.handler[setBasePathSymbol](basePath);
+      if (route.handler[setBasePathSymbol]) {
+        const newPath = `${basePath}${route.path}`;
+        const match = subAppMatch(newPath);
+        route.path = basePath;
+        route.match = match;
+        route.handler[setBasePathSymbol](newPath);
+      } else {
+        const newPath = `${basePath}${route.path}`;
+        const match = routeMatch(newPath);
+        route.match = match;
+      }
     }
   }
 
