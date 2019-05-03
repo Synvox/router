@@ -1,8 +1,9 @@
 //@ts-check
 const url = require("url");
-const qs = require("qs");
+const { parse: parseQueryString } = require("querystring");
 const { send } = require("micro");
 const pathMatch = require("path-match");
+
 const subAppMatch = pathMatch({
   sensitive: false,
   strict: false,
@@ -32,7 +33,7 @@ function Router() {
   }
 
   function use(path, handler) {
-    handler[setBasePathSymbol](path);
+    handler[setBasePathSymbol](basePath + path);
     const match = subAppMatch(basePath + path);
     routes.push({ method: null, path, handler, match });
   }
@@ -46,6 +47,7 @@ function Router() {
 
       if (!params) continue;
       paramsMap.set(req, params);
+      basePathMap.set(req, basePath);
       return route.handler(req, res);
     }
 
@@ -105,12 +107,17 @@ function createHook(fn) {
 exports.createHook = createHook;
 
 const paramsMap = new WeakMap();
-exports.params = function params(req) {
+exports.useUrlParams = function useUrlParams(req) {
   return paramsMap.get(req);
 };
 
-exports.query = createHook(function query(req) {
+exports.useQueryString = createHook(function useQueryString(req) {
   const queryString = url.parse(req.url, true).search;
-  const query = qs.parse(queryString.slice(1));
+  const query = parseQueryString(queryString.slice(1));
   return query;
 });
+
+const basePathMap = new WeakMap();
+exports.useBasePath = function(req) {
+  return basePathMap.get(req);
+};

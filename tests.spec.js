@@ -7,7 +7,13 @@ const micro = require("micro");
 const testListen = require("test-listen");
 const { get, post } = require("axios");
 
-const { Router, params, query, createHook } = require("./");
+const {
+  Router,
+  useUrlParams,
+  useQueryString,
+  createHook,
+  useBasePath
+} = require("./");
 
 let server = null;
 beforeAll(() => {
@@ -32,7 +38,7 @@ it("should handle requests", async () => {
   const app = Router();
 
   app.get("/:name", req => {
-    const { name } = params(req);
+    const { name } = useUrlParams(req);
     return `Hello ${name}`;
   });
 
@@ -46,12 +52,12 @@ it("should handle multiple routes", async () => {
   const app = Router();
 
   app.get("/:name", req => {
-    const { name } = params(req);
+    const { name } = useUrlParams(req);
     return `Hello ${name}`;
   });
 
   app.post("/:name", req => {
-    const { name } = params(req);
+    const { name } = useUrlParams(req);
     return `Posted to ${name}`;
   });
 
@@ -86,7 +92,7 @@ it("should allow nesting routers", async () => {
   const subApp = Router();
 
   subApp.get("/:age", req => {
-    const { age } = params(req);
+    const { age } = useUrlParams(req);
     return `age is ${age}`;
   });
 
@@ -109,35 +115,35 @@ it("should 404 if no route is found", async () => {
   expect(status).toEqual(404);
 });
 
-describe("search query", () => {
-  it("should allow getting the search query", async () => {
-    const app = Router();
+it("should allow getting the search query", async () => {
+  const app = Router();
 
-    app.get("/", req => {
-      const { name } = query(req);
-      return `Hello ${name}`;
-    });
-
-    const url = await listen(micro(app));
-    const { data: body } = await get(`${url}?name=bobby`);
-
-    expect(body).toEqual("Hello bobby");
+  app.get("/", req => {
+    const { name } = useQueryString(req);
+    return `Hello ${name}`;
   });
 
-  it("should cache requests to get the search query", async () => {
-    const app = Router();
+  const url = await listen(micro(app));
+  const { data: body } = await get(`${url}?name=bobby`);
 
-    app.get("/", req => {
-      const query1 = query(req);
-      const query2 = query(req);
-      return query1 === query2 ? "equal" : "not-equal";
-    });
+  expect(body).toEqual("Hello bobby");
+});
 
-    const url = await listen(micro(app));
-    const { data: body } = await get(`${url}?name="bob`);
+it("should allow getting the base path", async () => {
+  const subApp = Router();
 
-    expect(body).toEqual("equal");
+  subApp.get("/", req => {
+    return useBasePath(req);
   });
+
+  const app = Router();
+
+  app.use("/sub", subApp);
+
+  const url = await listen(micro(app));
+  const { data: body } = await get(`${url}/sub`);
+
+  expect(body).toEqual("/sub");
 });
 
 describe("custom hooks", () => {
@@ -168,5 +174,20 @@ describe("custom hooks", () => {
     const { data: body } = await get(url);
 
     expect(typeof body === "string").toEqual(true);
+  });
+
+  it("should cache requests to get the hooks", async () => {
+    const app = Router();
+
+    app.get("/", req => {
+      const query1 = useQueryString(req);
+      const query2 = useQueryString(req);
+      return query1 === query2 ? "equal" : "not-equal";
+    });
+
+    const url = await listen(micro(app));
+    const { data: body } = await get(`${url}?name="bob`);
+
+    expect(body).toEqual("equal");
   });
 });
