@@ -106,6 +106,31 @@ it("should allow nesting routers", async () => {
   expect(body).toEqual("age is 123");
 });
 
+it("should allow nesting deep routers", async () => {
+  const subApp2 = Router();
+
+  subApp2.get("/", () => {
+    return "2nd";
+  });
+
+  const subApp1 = Router();
+
+  subApp1.get("/b", () => {
+    return "bad";
+  });
+
+  const app = Router();
+
+  subApp1.use("/2nd", subApp2);
+
+  app.use("/1st", subApp1);
+
+  const url = await listen(micro(app));
+  const { data: body } = await get(`${url}/1st/2nd`);
+
+  expect(body).toEqual("2nd");
+});
+
 it("should 404 if no route is found", async () => {
   const app = Router();
 
