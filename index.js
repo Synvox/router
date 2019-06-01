@@ -33,7 +33,7 @@ function Router() {
   }
 
   function use(path, handler) {
-    handler[setBasePathSymbol](basePath + path);
+    if (handler[setBasePathSymbol]) handler[setBasePathSymbol](basePath + path);
     const match = subAppMatch(basePath + path);
     routes.push({ method: null, path, handler, match });
   }
