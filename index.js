@@ -122,7 +122,10 @@ exports.useUrlParams = function useUrlParams(req) {
 
 exports.useQueryString = createHook(function useQueryString(req) {
   const queryString = url.parse(req.url, true).search;
-  const query = parseQueryString(queryString.slice(1));
+  const query = parseQueryString(
+    // although queryString should not be nullable, sometimes it comes back null
+    (queryString || "").slice(1)
+  );
   return query;
 });
 
