@@ -1,7 +1,7 @@
 {
   "name": "@synvox/router",
   "public": true,
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "An express like routing lib for express that supports nesting routers.",
   "main": "index.js",
   "types": "index.d.ts",
