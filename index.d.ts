@@ -6,7 +6,7 @@ type RequestHandler = (req: IncomingMessage, res: ServerResponse) => any;
 
 type RoutePathHandler = (path: string, handler: RequestHandler) => void;
 
-interface App {
+export interface Router {
   (req: IncomingMessage, res: ServerResponse): any;
   use: RoutePathHandler;
   get: RoutePathHandler;
@@ -20,11 +20,11 @@ interface App {
   patch: RoutePathHandler;
 }
 
-export function Router(): App;
+export function RouterConstructor(): Router;
 export function useUrlParams<T>(req: IncomingMessage): T;
 export function useQueryString<T>(req: IncomingMessage): T;
 export function createHook<T>(
   fn: (req: IncomingMessage) => T
 ): (req: IncomingMessage) => T;
 
-export default Router;
+export default RouterConstructor;
