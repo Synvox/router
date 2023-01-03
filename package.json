@@ -24,7 +24,7 @@
     "path-match": "^1.2.4"
   },
   "devDependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.2",
     "jest": "^24.7.1",
     "micro": "^9.3.3",
     "test-listen": "^1.1.0"
